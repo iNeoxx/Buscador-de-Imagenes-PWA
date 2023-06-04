@@ -1,6 +1,6 @@
 {
-    "name": "APV ",
-    "short_name": "APV",
+    "name": "BIP",
+    "short_name": "BIP",
     "start_url": "/index.html",
     "display": "standalone", 
     "background_color": "#D41872",
