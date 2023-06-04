@@ -3,8 +3,8 @@
     "short_name": "BIP",
     "start_url": "/index.html",
     "display": "standalone", 
-    "background_color": "#D41872",
-    "theme_color": "#D41872",
+    "background_color": "#355a6a",
+    "theme_color": "#355a6a",
     "orientation": "portrait-primary",
     "icons": [
       {
