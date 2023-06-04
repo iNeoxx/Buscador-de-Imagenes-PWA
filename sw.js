@@ -12,33 +12,49 @@ const archivos = [
   '/js/app.js',
   '/js/appV.js'
 ];
-//instalar el service worker
-self.addEventListener('install', e=>{
-    console.log('Instalado el service worker');
-     //espera a que se hayan descargado todos lo cache de archivos
-    e.waitUntil(
-        caches.open(nombreCache)
-        .then(cache => {                   //un promise para cargar caché
-            console.log('cacheando');
-            cache.addAll(archivos)  //cache.add(archivo); si fuera un solo archivo en caché
-        })
-    )
+self.addEventListener('install', event => {
+  console.log('Instalado el service worker');
+
+  event.waitUntil(
+    caches.open(nombreCache)
+      .then(cache => {
+        console.log('Cacheando');
+        return cache.addAll(archivos);
+      })
+  );
 });
-self.addEventListener('activate', e=>{
-    console.log('Activado el service worker');
-})
 
-//evento fetch para descargar archivos estatico.
+self.addEventListener('activate', event => {
+  console.log('Activado el service worker');
+});
 
-self.addEventListener('fetch', e=>{
-    console.log('Fetch ...', e)    
+self.addEventListener('fetch', event => {
+  console.log('Fetch...', event);
 
-    //para cargar los elementos de caché
-    e.respondWith(
-       caches.match(e.request)  //busca lo que tengamos en caché
-          .then(respuestaCache => {  //si es positivo...
-            return respuestaCache  //carga lo que hay en caché
-    })
-    )
-})
+  event.respondWith(
+    caches.match(event.request)
+      .then(cachedResponse => {
+        if (cachedResponse) {
+          // Si el recurso está en caché, lo retornamos
+          return cachedResponse;
+        }
+
+        // Si no está en caché, realizamos una solicitud de red
+        return fetch(event.request)
+          .then(response => {
+            // Clonamos la respuesta, ya que solo se puede leer una vez
+            const clonedResponse = response.clone();
+
+            // Almacenamos la respuesta en caché para futuras solicitudes
+            caches.open(nombreCache)
+              .then(cache => {
+                cache.put(event.request, clonedResponse);
+              });
+
+            // Retornamos la respuesta original
+            return response;
+          });
+      })
+  );
+});
 
